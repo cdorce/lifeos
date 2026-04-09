@@ -36,7 +36,9 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Serve static files from public folder (React build)
-app.use(express.static(path.join(__dirname, 'public')));
+app.get('*', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'dist', 'index.html'));
+});
 
 // API Routes
 app.use('/api/auth', authRoutes);
