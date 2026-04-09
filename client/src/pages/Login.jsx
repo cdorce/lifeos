@@ -52,10 +52,10 @@ const Login = () => {
         {/* Logo & Title */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-4">
-            <span className="text-2xl font-bold text-white">L</span>
+            <span className="text-2xl font-bold text-white">DCW</span>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Welcome Back</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">Sign in to your LifeOS account</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">Sign in to Widmaer LifeOS</p>
         </div>
 
         {/* Login Form */}
@@ -144,22 +144,6 @@ const Login = () => {
             </button>
           </form>
 
-          {/* Sign Up Link */}
-          <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 font-semibold">
-              Sign up
-            </Link>
-          </p>
-
-          {/* Demo Account Info */}
-          <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-            <p className="text-sm text-blue-800 dark:text-blue-300 font-medium mb-1">Demo Account:</p>
-            <p className="text-xs text-blue-600 dark:text-blue-400">
-              Email: john@example.com<br/>
-              Password: password123
-            </p>
-          </div>
         </div>
       </div>
     </div>
