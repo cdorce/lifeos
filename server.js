@@ -33,7 +33,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Serve static files from public folder
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public', 'dist')));
 
 // ✅ API ROUTES FIRST
 app.use('/api/auth', authRoutes);
@@ -96,7 +96,7 @@ app.get('/api/test-path', (req, res) => {
 
 // ✅ CATCH-ALL REACT ROUTE - MUST BE LAST
 app.get('*', (_req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'dist', 'index.html'));
 });
 
 // Error handler
