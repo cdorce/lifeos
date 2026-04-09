@@ -37,7 +37,7 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Serve static files from public folder (React build)
 app.get('*', (_req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'dist', 'index.html'));
+  res.sendFile(path.join(__dirname, 'lifos', 'public', 'dist', 'index.html'));
 });
 
 // API Routes
