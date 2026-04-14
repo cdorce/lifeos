@@ -30,7 +30,7 @@ const Sidebar = () => {
     { id: 'radio', label: 'Radio', icon: Volume2, path: '/radio' },
     { id: 'library', label: 'Book Library', icon: BookOpen, path: '/books' },
     // { id: 'language', label: 'Language Learning', icon: Languages, path: '/language' },
-    // { id: 'ai-chat', label: 'AI Chat', icon: MessageSquare, path: '/ai-chat' },
+    { id: 'ai-assistant', label: 'AI Assistant', icon: MessageSquare, path: '/ai-assistant' },
     { id: 'focus', label: 'Focus Timer', icon: Clock, path: '/focus' },
   ];
 

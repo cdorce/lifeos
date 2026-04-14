@@ -21,6 +21,7 @@ import NotFound from './pages/NotFound';
 import MusicPlayer from './components/MusicPlayer/MusicPlayer';
 import BookLibrary from './components/BookLibrary/BookLibrary';
 import Radio from './components/Radio/Radio';
+import AIAssistant from './components/AIAssistant/AIAssistant';
 
 import MusicEngine from "./global/MusicEngine";
 import GlobalMusicPlayerBar from "./global/GlobalMusicPlayerBar";
@@ -63,6 +64,7 @@ function App() {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/music" element={<MusicPlayer userId={1} />} />
                 <Route path="/radio" element={<Radio />} />
+                <Route path="/ai-assistant" element={<AIAssistant />} />
                 <Route path="/books" element={<BookLibrary userId={1} />} />
               </Route>
 

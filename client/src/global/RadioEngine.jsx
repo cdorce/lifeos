@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { useEffect, useRef } from 'react';
 
-// Global audio element — never destroyed
+// Single global audio element — never destroyed, same as MusicEngine pattern
 let globalRadioAudio = null;
 let radioInitialized = false;
 
@@ -11,44 +11,24 @@ export const useRadioStore = create((set, get) => ({
   volume: 0.8,
   isMuted: false,
 
+  // Only sets state — the RadioEngine component's useEffects handle the actual audio
   playStation: (station) => {
     const state = get();
-
-    // Stop existing audio
-    if (globalRadioAudio) {
-      globalRadioAudio.pause();
-      globalRadioAudio.src = '';
-    }
-
-    // Clicking the active station while playing → stop it
+    // Clicking the active playing station toggles it off
     if (state.currentStation?.stationuuid === station.stationuuid && state.isPlaying) {
-      set({ isPlaying: false, currentStation: null });
+      set({ isPlaying: false });
       return;
     }
-
-    globalRadioAudio = new Audio(station.url);
-    globalRadioAudio.volume = state.isMuted ? 0 : state.volume;
-    globalRadioAudio.play().catch(err => console.error('Radio playback error:', err));
     set({ currentStation: station, isPlaying: true });
   },
 
-  pause: () => {
-    if (globalRadioAudio) globalRadioAudio.pause();
-    set({ isPlaying: false });
-  },
-
-  resume: () => {
-    if (globalRadioAudio) {
-      globalRadioAudio.play().catch(err => console.error('Radio resume error:', err));
-      set({ isPlaying: true });
-    }
-  },
+  pause:  () => set({ isPlaying: false }),
+  resume: () => set({ isPlaying: true }),
 
   stop: () => {
     if (globalRadioAudio) {
       globalRadioAudio.pause();
       globalRadioAudio.src = '';
-      globalRadioAudio = null;
     }
     set({ isPlaying: false, currentStation: null });
   },
@@ -66,15 +46,57 @@ export const useRadioStore = create((set, get) => ({
   },
 }));
 
-// Mounts once in App.jsx — keeps audio alive across route changes
+// Mounts ONCE in App.jsx (outside <Routes>) — never unmounts
+// Mirrors MusicEngine: useEffects here are the bridge between store state and the audio API
 export default function RadioEngine() {
+  const { currentStation, isPlaying, volume, isMuted } = useRadioStore();
   const initRef = useRef(false);
 
+  // Create the single audio element once
   useEffect(() => {
     if (initRef.current || radioInitialized) return;
     initRef.current = true;
     radioInitialized = true;
+
+    globalRadioAudio = new Audio();
+    globalRadioAudio.preload = 'none';
   }, []);
+
+  // React to station changes — load new stream, play if needed
+  useEffect(() => {
+    if (!globalRadioAudio) return;
+
+    if (!currentStation) {
+      globalRadioAudio.pause();
+      globalRadioAudio.src = '';
+      return;
+    }
+
+    globalRadioAudio.pause();
+    globalRadioAudio.src = currentStation.url;
+    globalRadioAudio.load();
+
+    if (isPlaying) {
+      globalRadioAudio.play().catch(err => console.error('Radio play error:', err));
+    }
+  }, [currentStation]);
+
+  // React to play/pause toggle
+  useEffect(() => {
+    if (!globalRadioAudio) return;
+    if (isPlaying) {
+      globalRadioAudio.play().catch(err => console.error('Radio play error:', err));
+    } else {
+      globalRadioAudio.pause();
+    }
+  }, [isPlaying]);
+
+  // React to volume / mute
+  useEffect(() => {
+    if (globalRadioAudio) {
+      globalRadioAudio.volume = isMuted ? 0 : Math.max(0, Math.min(1, volume));
+    }
+  }, [volume, isMuted]);
 
   return null;
 }
