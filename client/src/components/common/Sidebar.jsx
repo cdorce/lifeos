@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  CheckSquare, 
-  Briefcase, 
+import {
+  LayoutDashboard,
+  CheckSquare,
+  Briefcase,
   DollarSign,
   FolderKanban,
   BookOpen,
   Music,
+  Volume2,
   Languages,
   MessageSquare,
   Clock,
@@ -26,6 +27,7 @@ const Sidebar = () => {
     { id: 'budget', label: 'Budget & Savings', icon: DollarSign, path: '/budget' },
     { id: 'projects', label: 'Projects', icon: FolderKanban, path: '/projects' },
     { id: 'music', label: 'Music', icon: Music, path: '/music' },
+    { id: 'radio', label: 'Radio', icon: Volume2, path: '/radio' },
     { id: 'library', label: 'Book Library', icon: BookOpen, path: '/books' },
     // { id: 'language', label: 'Language Learning', icon: Languages, path: '/language' },
     // { id: 'ai-chat', label: 'AI Chat', icon: MessageSquare, path: '/ai-chat' },
