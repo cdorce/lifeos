@@ -44,7 +44,7 @@ export default function AIAssistant() {
       });
 
       if (!response.ok) {
-        throw new Error('Ollama is not running. Please start Ollama on your computer first.');
+        throw new Error('Ollama returned an error. Make sure a model is pulled: ollama pull mistral');
       }
 
       const data = await response.json();
@@ -56,10 +56,14 @@ export default function AIAssistant() {
         timestamp: new Date(),
       }]);
     } catch (err) {
-      setError(err.message);
+      const isNetwork = err instanceof TypeError;
+      const msg = isNetwork
+        ? 'Cannot reach Ollama. Make sure:\n1. Ollama is running on your computer\n2. OLLAMA_ORIGINS is set to allow this site (see Settings → AI Setup)'
+        : err.message;
+      setError(msg);
       setMessages(prev => [...prev, {
         id: Date.now() + 1,
-        text: `❌ ${err.message}`,
+        text: `❌ ${msg}`,
         sender: 'ai',
         timestamp: new Date(),
         isError: true,
@@ -125,7 +129,10 @@ export default function AIAssistant() {
             <option value="llama2">Llama 2 (Most Capable)</option>
             <option value="codellama">Code Llama (Best for Code)</option>
           </select>
-          <p className="text-xs text-slate-400 mt-1">Local AI — no internet required</p>
+          <p className="text-xs text-slate-400 mt-1">
+            Local AI — requires Ollama running on your computer.{' '}
+            <span className="text-yellow-400">First time? Set <code className="bg-slate-600 px-1 rounded">OLLAMA_ORIGINS=https://lifeos.clefftonwidmaer.com</code> as a Windows system env var, then restart Ollama.</span>
+          </p>
         </div>
       </div>
 

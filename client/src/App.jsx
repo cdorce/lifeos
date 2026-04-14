@@ -26,7 +26,6 @@ import AIAssistant from './components/AIAssistant/AIAssistant';
 import MusicEngine from "./global/MusicEngine";
 import GlobalMusicPlayerBar from "./global/GlobalMusicPlayerBar";
 import RadioEngine from "./global/RadioEngine";
-import GlobalRadioBar from "./global/GlobalRadioBar";
 
 function App() {
   return (
@@ -39,11 +38,8 @@ function App() {
             <MusicEngine />
             <RadioEngine />
 
-            {/* 🎵 GLOBAL BOTTOM MUSIC PLAYER BAR (always visible) */}
+            {/* 🎵 GLOBAL BOTTOM PLAYER BAR — music + radio merged */}
             <GlobalMusicPlayerBar />
-
-            {/* 📻 GLOBAL RADIO BAR (shown above music bar when a station is playing) */}
-            <GlobalRadioBar />
 
             <Routes>
               {/* Auth Routes */}
