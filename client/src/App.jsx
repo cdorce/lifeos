@@ -24,6 +24,8 @@ import Radio from './components/Radio/Radio';
 
 import MusicEngine from "./global/MusicEngine";
 import GlobalMusicPlayerBar from "./global/GlobalMusicPlayerBar";
+import RadioEngine from "./global/RadioEngine";
+import GlobalRadioBar from "./global/GlobalRadioBar";
 
 function App() {
   return (
@@ -34,9 +36,13 @@ function App() {
 
             {/* 🌍 GLOBAL AUDIO ENGINE (never unmounts) */}
             <MusicEngine />
+            <RadioEngine />
 
             {/* 🎵 GLOBAL BOTTOM MUSIC PLAYER BAR (always visible) */}
             <GlobalMusicPlayerBar />
+
+            {/* 📻 GLOBAL RADIO BAR (shown above music bar when a station is playing) */}
+            <GlobalRadioBar />
 
             <Routes>
               {/* Auth Routes */}

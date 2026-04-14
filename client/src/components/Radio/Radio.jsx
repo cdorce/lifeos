@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { Volume2, VolumeX, Search, Play, Pause, Square } from 'lucide-react';
+import { useRadioStore } from '../../global/RadioEngine';
 
 const CATEGORIES = [
   { label: 'Pop',     tag: 'pop' },
@@ -14,32 +15,12 @@ const CATEGORIES = [
 ];
 
 export default function Radio() {
-  const [stations, setStations]           = useState([]);
-  const [searchQuery, setSearchQuery]     = useState('');
-  const [loading, setLoading]             = useState(false);
-  const [currentStation, setCurrentStation] = useState(null);
-  const [isPlaying, setIsPlaying]         = useState(false);
-  const [volume, setVolume]               = useState(0.8);
-  const [isMuted, setIsMuted]             = useState(false);
+  const [stations, setStations]             = useState([]);
+  const [searchQuery, setSearchQuery]       = useState('');
+  const [loading, setLoading]               = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
-  const audioRef = useRef(null);
 
-  // Keep audio volume in sync
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = isMuted ? 0 : volume;
-    }
-  }, [volume, isMuted]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-    };
-  }, []);
+  const { currentStation, isPlaying, volume, isMuted, playStation, pause, resume, stop, setVolume, toggleMute } = useRadioStore();
 
   const fetchStations = async (query) => {
     if (!query.trim()) return;
@@ -50,8 +31,8 @@ export default function Radio() {
       );
       const data = await response.json();
       setStations(data);
-    } catch (error) {
-      console.error('Error fetching stations:', error);
+    } catch (err) {
+      console.error('Error fetching stations:', err);
     }
     setLoading(false);
   };
@@ -66,63 +47,10 @@ export default function Radio() {
       );
       const data = await response.json();
       setStations(data);
-    } catch (error) {
-      console.error('Error fetching stations by tag:', error);
+    } catch (err) {
+      console.error('Error fetching stations by tag:', err);
     }
     setLoading(false);
-  };
-
-  const playStation = (station) => {
-    // Stop current audio
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
-    }
-
-    // If clicking the same station, stop it
-    if (currentStation?.stationuuid === station.stationuuid && isPlaying) {
-      setIsPlaying(false);
-      setCurrentStation(null);
-      return;
-    }
-
-    const newAudio = new Audio(station.url);
-    newAudio.volume = isMuted ? 0 : volume;
-    newAudio.play().catch(err => console.error('Playback error:', err));
-    newAudio.onended = () => setIsPlaying(false);
-    audioRef.current = newAudio;
-    setCurrentStation(station);
-    setIsPlaying(true);
-  };
-
-  const handlePlayPause = () => {
-    if (!audioRef.current) return;
-    if (isPlaying) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      audioRef.current.play().catch(err => console.error('Playback error:', err));
-      setIsPlaying(true);
-    }
-  };
-
-  const handleStop = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
-    }
-    setIsPlaying(false);
-    setCurrentStation(null);
-  };
-
-  const handleVolumeChange = (e) => {
-    const val = parseFloat(e.target.value);
-    setVolume(val);
-    setIsMuted(val === 0);
-  };
-
-  const toggleMute = () => {
-    setIsMuted((prev) => !prev);
   };
 
   const handleSearch = (e) => {
@@ -201,51 +129,45 @@ export default function Radio() {
                     {station.country || 'Unknown'}{station.tags ? ` · ${station.tags.split(',')[0]}` : ''}
                   </p>
                 </div>
-                {active && isPlaying ? (
-                  <Pause className="w-5 h-5 text-white flex-shrink-0" />
-                ) : (
-                  <Play className="w-5 h-5 text-white flex-shrink-0" />
-                )}
+                {active && isPlaying
+                  ? <Pause className="w-5 h-5 text-white flex-shrink-0" />
+                  : <Play  className="w-5 h-5 text-white flex-shrink-0" />
+                }
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Player Bar */}
+      {/* In-page Player Bar (only visible on radio tab) */}
       {currentStation && (
-        <div className="sticky bottom-0 mt-4 p-4 bg-slate-800 border border-slate-700 rounded-xl">
-          {/* Station info */}
+        <div className="sticky bottom-0 p-4 bg-slate-800 border border-slate-700 rounded-xl">
           <div className="mb-3">
             <p className="text-xs text-slate-400 uppercase tracking-wide">Now Playing</p>
             <p className="text-base font-bold text-white truncate">{currentStation.name}</p>
             <p className="text-sm text-slate-400">{currentStation.country}</p>
           </div>
 
-          {/* Controls row */}
           <div className="flex items-center gap-4">
-            {/* Play / Pause */}
             <button
-              onClick={handlePlayPause}
+              onClick={isPlaying ? pause : resume}
               className="p-2 bg-blue-500 hover:bg-blue-600 rounded-full transition"
               title={isPlaying ? 'Pause' : 'Play'}
             >
               {isPlaying
                 ? <Pause className="w-5 h-5 text-white" />
-                : <Play className="w-5 h-5 text-white" />
+                : <Play  className="w-5 h-5 text-white" />
               }
             </button>
 
-            {/* Stop */}
             <button
-              onClick={handleStop}
+              onClick={stop}
               className="p-2 bg-slate-600 hover:bg-slate-500 rounded-full transition"
               title="Stop"
             >
               <Square className="w-5 h-5 text-white" />
             </button>
 
-            {/* Volume */}
             <div className="flex items-center gap-2 flex-1">
               <button onClick={toggleMute} className="text-slate-300 hover:text-white transition">
                 {isMuted || volume === 0
@@ -259,7 +181,7 @@ export default function Radio() {
                 max="1"
                 step="0.02"
                 value={isMuted ? 0 : volume}
-                onChange={handleVolumeChange}
+                onChange={(e) => setVolume(parseFloat(e.target.value))}
                 className="flex-1 accent-blue-400 cursor-pointer"
               />
               <span className="text-xs text-slate-400 w-8 text-right">
